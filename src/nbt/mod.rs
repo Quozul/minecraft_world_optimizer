@@ -1,4 +1,5 @@
+pub mod binary_reader;
 pub mod parse;
-mod readers;
+mod parsers;
 pub mod tag;
 mod writers;

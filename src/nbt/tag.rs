@@ -57,6 +57,41 @@ pub enum Tag {
 }
 
 impl Tag {
+    pub fn to_bytes(&self) -> Vec<u8> {
+        self.to_bytes_tag(false, false)
+    }
+
+    pub fn get_long(&self) -> Option<&i64> {
+        match self {
+            Tag::Long { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn get_int(&self) -> Option<&i32> {
+        match self {
+            Tag::Int { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn get_string(&self) -> Option<&String> {
+        match self {
+            Tag::String { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn find_tag(&self, name: impl ToString) -> Option<&Tag> {
+        let name = name.to_string();
+        match self {
+            Self::Compound { value, .. } => value
+                .iter()
+                .find(|v| v.get_name().is_some_and(|v| v == name)),
+            _ => None,
+        }
+    }
+
     fn get_tag_type(&self) -> u8 {
         match self {
             Tag::End => 0,
@@ -98,10 +133,6 @@ impl Tag {
             None => Vec::from([0, 0]),
             Some(name) => write_string(name),
         }
-    }
-
-    pub fn to_bytes(&self) -> Vec<u8> {
-        self.to_bytes_tag(false, false)
     }
 
     fn to_bytes_tag(&self, skip_name: bool, skip_tag_type: bool) -> Vec<u8> {
@@ -170,36 +201,5 @@ impl Tag {
         };
 
         base
-    }
-
-    pub fn get_long(&self) -> Option<&i64> {
-        match self {
-            Tag::Long { value, .. } => Some(value),
-            _ => None,
-        }
-    }
-
-    pub fn get_int(&self) -> Option<&i32> {
-        match self {
-            Tag::Int { value, .. } => Some(value),
-            _ => None,
-        }
-    }
-
-    pub fn get_string(&self) -> Option<&String> {
-        match self {
-            Tag::String { value, .. } => Some(value),
-            _ => None,
-        }
-    }
-
-    pub fn find_tag(&self, name: impl ToString) -> Option<&Tag> {
-        let name = name.to_string();
-        match self {
-            Self::Compound { value, .. } => value
-                .iter()
-                .find(|v| v.get_name().is_some_and(|v| v == name)),
-            _ => None,
-        }
     }
 }

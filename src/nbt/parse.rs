@@ -1,119 +1,10 @@
-use crate::nbt::readers::{
-    read_f32, read_f64, read_i16, read_i32, read_i64, read_i8, read_name, read_string, read_type,
-};
+use crate::nbt::binary_reader::BinaryReader;
+use crate::nbt::parsers::parse_with_type::parse_with_type;
 use crate::nbt::tag::Tag;
 
-pub fn parse_tag(raw: &[u8], index: &mut usize) -> Tag {
-    let tag_type = read_type(raw, index);
-    parse_of_type(raw, index, tag_type, false)
-}
-
-fn parse_of_type(raw: &[u8], index: &mut usize, tag_type: u8, skip_name: bool) -> Tag {
-    let name = if skip_name || tag_type == 0 {
-        None
-    } else {
-        read_name(raw, index)
-    };
-
-    match tag_type {
-        0 => Tag::End,
-        1 => {
-            let value = read_i8(raw, index);
-            Tag::Byte { name, value }
-        }
-        2 => {
-            let value = read_i16(raw, index);
-            Tag::Short { name, value }
-        }
-        3 => {
-            let value = read_i32(raw, index);
-            Tag::Int { name, value }
-        }
-        4 => {
-            let value = read_i64(raw, index);
-            Tag::Long { name, value }
-        }
-        5 => {
-            let value = read_f32(raw, index);
-            Tag::Float { name, value }
-        }
-        6 => {
-            let value = read_f64(raw, index);
-            Tag::Double { name, value }
-        }
-        7 => {
-            let value = parse_array(raw, index, read_i8);
-            Tag::ByteArray { name, value }
-        }
-        8 => {
-            let value = read_string(raw, index).unwrap_or_default();
-            Tag::String { name, value }
-        }
-        9 => {
-            let (tag_type, value) = parse_list_tag(raw, index);
-            Tag::List {
-                name,
-                value,
-                tag_type,
-            }
-        }
-        10 => {
-            let value = parse_compound_tag(raw, index);
-            Tag::Compound { name, value }
-        }
-        11 => {
-            let value = parse_array(raw, index, read_i32);
-            Tag::IntArray { name, value }
-        }
-        12 => {
-            let value = parse_array(raw, index, read_i64);
-            Tag::LongArray { name, value }
-        }
-        _ => panic!("Unsupported tag type {tag_type}"),
-    }
-}
-
-fn parse_list_tag(raw: &[u8], index: &mut usize) -> (u8, Vec<Tag>) {
-    let mut values = Vec::new();
-
-    let tag_type = read_type(raw, index);
-    let list_length = read_i32(raw, index);
-    if list_length <= 0 && tag_type == 0 {
-        return (tag_type, values);
-    }
-
-    for _ in 0..list_length {
-        let next_tag = parse_of_type(raw, index, tag_type, true);
-        values.push(next_tag);
-    }
-
-    (tag_type, values)
-}
-
-fn parse_compound_tag(raw: &[u8], index: &mut usize) -> Vec<Tag> {
-    let mut values = Vec::new();
-
-    loop {
-        let next_tag = parse_tag(raw, index);
-        if next_tag == Tag::End {
-            break;
-        }
-        values.push(next_tag);
-    }
-
-    values
-}
-
-fn parse_array<T>(raw: &[u8], index: &mut usize, parser: fn(&[u8], &mut usize) -> T) -> Vec<T> {
-    let size = read_i32(raw, index);
-    let mut values = Vec::new();
-
-    for _ in 0..size {
-        let next_tag = parser(raw, index);
-        values.push(next_tag);
-    }
-
-    values
+pub fn parse_tag(reader: &mut BinaryReader) -> Tag {
+    let tag_type = reader.read_type();
+    parse_with_type(reader, tag_type, false)
 }
 
 #[cfg(test)]
@@ -123,8 +14,8 @@ mod tests {
     #[test]
     fn test_hello_world() {
         let data = include_bytes!("../../test_files/hello_world.nbt");
-        let mut index = 0_usize;
-        let result = parse_tag(data, &mut index);
+        let mut reader = BinaryReader::new(data);
+        let result = parse_tag(&mut reader);
 
         assert_eq!(
             result,
@@ -144,9 +35,8 @@ mod tests {
     #[test]
     fn test_bigtest() {
         let data = include_bytes!("../../test_files/bigtest.nbt");
-
-        let mut index = 0_usize;
-        let result = parse_tag(data, &mut index);
+        let mut reader = BinaryReader::new(data);
+        let result = parse_tag(&mut reader);
 
         // Build the ByteArray
         let mut value = Vec::new();

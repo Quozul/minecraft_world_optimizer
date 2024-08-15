@@ -1,4 +1,5 @@
 use crate::compression_scheme::CompressionScheme;
+use crate::nbt::binary_reader::BinaryReader;
 use crate::nbt::parse::parse_tag;
 use crate::nbt::tag::Tag;
 use crate::region_loader::get_u32::get_u32;
@@ -50,8 +51,8 @@ impl Chunk {
         // Convert to string
         let nbt = decoded_bytes
             .map(|bytes| {
-                let mut index = 0_usize;
-                parse_tag(&bytes, &mut index)
+                let mut binary_reader = BinaryReader::new(&bytes);
+                parse_tag(&mut binary_reader)
             })
             .map_err(|_| "Error while parsing NBT")?;
 
