@@ -1,44 +1,52 @@
 # Minecraft World Optimizer
 
 **Minecraft World Optimizer** is a command-line tool designed to reduce the size of your Minecraft world by parsing and
-optimizing region files. It's particularly useful for large worlds with many generated but unexplored chunks.
+optimizing region files. It's particularly useful for large worlds that have many generated but unexplored chunks.
 
 ## How it works
 
 The optimizer employs the following steps to analyze and optimize your world:
 
-1. **Parallel Processing:** Utilizes all available threads on your computer to load and parse region files
+1. **Parallel Processing:** Leverage all available threads on your computer to load and parse region files
    simultaneously,
    improving processing speed.
 2. **Invalid File Removal:** Deletes any invalid region files, such as those with insufficient size to hold chunk data.
 3. **Chunk Parsing & Removal:**
     * Ignores and deletes invalid chunks within valid region files.
     * Removes not fully generated or unexplored chunks to reduce world size.
+4. **Improved Compression:** Chunks are saved back using the best available compression level for further space
+   optimization.
 
 The optimizer operates in-place, replacing original region files with optimized ones. **Always make a backup before
 running!**
 
 ## Supported Compression Algorithms
 
-Minecraft supports several compression algorithms for region files.
-The Minecraft World Optimizer currently supports deflate, notably Zlib and GZip, as deflate is the default for most
-clients and servers.
+Minecraft supports several compression algorithms for chunk data inside the region files.
+The Minecraft World Optimizer currently only supports the deflate compression algorithm, Zlib and GZip, as deflate is
+the default for most clients and servers.
 If your world uses a different compression method, you may experience **data loss**.
+
+The Minecraft World Optimizer has only been successfully tested on 1.20.6 and 1.21 worlds.
 
 ## Expected Results
 
-In testing on a backed-up server world:
+The Minecraft World Optimizer as successfully been tested on the following worlds:
 
-- Original world size : 105 681 020 bytes and 24 381 files
-- After running the program : 16 145 728 bytes and 6 961 files
-  Resulting in an **84.7%** world size reduction.
+- **Server World:** Backed-up world of a real-world server with over 13 million generated chunks.
+- **New World:** New amplified world pre-generated using Chunky with a square radius of 1024.
 
-## Prerequisites
+| World Type   | Original Size (Bytes) | Original Files | New Size (Bytes) | New Files | Size Reduction (%) |
+|--------------|-----------------------|----------------|------------------|-----------|--------------------|
+| Server World | 105,681,020           | 24,381         | 16,145,728       | 6,961     | **84.7**           |
+| New World    | 235,204               | 36             | 2,440            | 4         | **98.9**           |
+
+## Getting Started
+
+### Prerequisites
 
 - Rust toolchain (stable)
 - A backed-up Minecraft world
-
-## Installation
 
 ### With Cargo
 
@@ -78,7 +86,7 @@ Contributions are welcome! If you encounter any issues or have suggestions for i
 pull request on GitHub. Make sure to follow the existing code style and include relevant tests.
 
 1. Fork the repository.
-2. Create a new branch (git checkout -b <branch-name>).
-3. Make changes and commit (git commit -am 'Add some feature').
-4. Push to your fork (git push origin <branch-name>).
+2. Create a new branch `git checkout -b <branch-name>`.
+3. Make changes and commit `git commit -m 'Add some feature'`.
+4. Push to your fork `git push origin <branch-name>`.
 5. Submit a pull request.

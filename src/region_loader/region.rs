@@ -20,7 +20,7 @@ impl Region {
     fn from_bytes(bytes: &[u8]) -> Result<Self, &'static str> {
         let mut chunks = Vec::new();
         if bytes.len() < 8192 {
-            return Err("Invalid region file");
+            return Err("Cannot read header of region file");
         }
 
         let location_table = &bytes[0..4096];

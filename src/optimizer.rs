@@ -42,8 +42,8 @@ pub fn optimize_region_file(
             let bytes = region.to_bytes();
             std::fs::write(region_file_path, bytes)?;
         }
-        Err(_) => {
-            pb.println(format!("[{:<15}] Invalid region file", region_file_name));
+        Err(err) => {
+            pb.println(format!("[{:<15}] {}", region_file_name, err));
             std::fs::remove_file(region_file_path)?;
         }
     }
