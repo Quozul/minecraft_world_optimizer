@@ -1,7 +1,10 @@
-use crate::region_loader::chunk::Chunk;
+use crate::region_loader::chunk_loader::chunk::Chunk;
 use crate::region_loader::get_u32::get_u32;
 use crate::region_loader::location::Location;
 use flate2::Compression;
+use std::fs::File;
+use std::io::Read;
+use std::path::PathBuf;
 
 #[derive(PartialEq, Debug)]
 pub struct Region {
@@ -9,14 +12,19 @@ pub struct Region {
 }
 
 impl Region {
-    pub fn from_bytes(buf: &[u8]) -> Result<Self, &'static str> {
+    pub fn from_file_name(file_name: &PathBuf) -> Result<Self, &'static str> {
+        let bytes = try_read_bytes(file_name).map_err(|_| "Error while reading the file")?;
+        Region::from_bytes(&bytes)
+    }
+
+    fn from_bytes(bytes: &[u8]) -> Result<Self, &'static str> {
         let mut chunks = Vec::new();
-        if buf.len() < 8192 {
+        if bytes.len() < 8192 {
             return Err("Invalid region file");
         }
 
-        let location_table = &buf[0..4096];
-        let timestamp_table = &buf[4096..8192];
+        let location_table = &bytes[0..4096];
+        let timestamp_table = &bytes[4096..8192];
 
         for i in (0..4096).step_by(4) {
             let l = get_u32(location_table, i);
@@ -24,7 +32,7 @@ impl Region {
             let location = Location::from_bytes(l, timestamp);
 
             if location.is_valid() {
-                if let Ok(chunk) = Chunk::from_location(buf, location) {
+                if let Ok(chunk) = Chunk::from_location(bytes, location) {
                     chunks.push(chunk);
                 }
                 // Else, we choose to not load the chunk and loose it because it is invalid
@@ -100,6 +108,12 @@ fn align_vec_size(vec: &mut Vec<u8>) {
 
 fn get_position_in_table(x: i32, z: i32) -> usize {
     (4 * ((x & 31) + (z & 31) * 32)) as usize
+}
+
+fn try_read_bytes(file_path: &PathBuf) -> Result<Vec<u8>, std::io::Error> {
+    let mut buf = Vec::<u8>::new();
+    File::open(file_path).and_then(|mut file| file.read_to_end(&mut buf))?;
+    Ok(buf)
 }
 
 #[cfg(test)]

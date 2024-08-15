@@ -1,4 +1,4 @@
-pub mod chunk;
+mod chunk_loader;
 mod get_u32;
-pub mod location;
+mod location;
 pub mod region;
