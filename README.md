@@ -33,13 +33,13 @@ The Minecraft World Optimizer has only been successfully tested on 1.20.6 and 1.
 
 The Minecraft World Optimizer as successfully been tested on the following worlds:
 
-- **Server World:** Backed-up world of a real-world server with over 13 million generated chunks.
+- **Server World:** Backed-up world of my survival server with over 13.9 million generated chunks.
 - **New World:** New amplified world pre-generated using Chunky with a square radius of 1024.
 
-| World Type   | Original Size (Bytes) | Original Files | New Size (Bytes) | New Files | Size Reduction (%) |
-|--------------|-----------------------|----------------|------------------|-----------|--------------------|
-| Server World | 105,681,020           | 24,381         | 16,145,728       | 6,961     | **84.7**           |
-| New World    | 235,204               | 36             | 2,440            | 4         | **98.9**           |
+| World        | Before Optimization                      | After Optimization                     | Size Reduction |
+|--------------|------------------------------------------|----------------------------------------|----------------|
+| Server World | 105,681,020 Kilobytes <br/> 24,381 Files | 16,145,728 Kilobytes <br/> 6,961 Files | **84.7%**      |
+| New World    | 235,204 Kilobytes <br/> 36 Files         | 2,440 Kilobytes <br/> 4 Files          | **98.9%**      |
 
 ## Getting Started
 
