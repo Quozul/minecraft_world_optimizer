@@ -75,6 +75,7 @@ impl Region {
                     .copy_from_slice(&timestamp_bytes);
             }
             // Else, the chunk is probably invalid, we can ignore it
+            // FIXME: We might not want to loose the corrupted chunk
 
             data.extend(serialized);
         }
@@ -110,7 +111,7 @@ fn get_position_in_table(x: i32, z: i32) -> usize {
     (4 * ((x & 31) + (z & 31) * 32)) as usize
 }
 
-fn try_read_bytes(file_path: &PathBuf) -> Result<Vec<u8>, std::io::Error> {
+fn try_read_bytes(file_path: &PathBuf) -> std::io::Result<Vec<u8>> {
     let mut buf = Vec::<u8>::new();
     File::open(file_path).and_then(|mut file| file.read_to_end(&mut buf))?;
     Ok(buf)

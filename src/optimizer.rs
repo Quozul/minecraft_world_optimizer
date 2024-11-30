@@ -2,10 +2,7 @@ use crate::region_loader::region::Region;
 use indicatif::ProgressBar;
 use std::path::PathBuf;
 
-pub fn optimize_region_file(
-    region_file_path: PathBuf,
-    pb: &ProgressBar,
-) -> Result<(), std::io::Error> {
+pub fn optimize_region_file(region_file_path: PathBuf, pb: &ProgressBar) -> std::io::Result<()> {
     let region_file_name = region_file_path
         .file_stem()
         .map(|os_str_val| os_str_val.to_string_lossy().into_owned())
