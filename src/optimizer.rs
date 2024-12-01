@@ -17,15 +17,16 @@ pub fn optimize_region_file(
     match Region::from_file_name(region_file_path) {
         Ok(mut region) => {
             let chunks = region.get_chunks();
-
-            let mut chunks_to_delete = Vec::new();
             result.total_chunks += chunks.len();
 
+            let mut chunks_to_delete = Vec::new();
             for chunk in chunks {
                 if chunk.should_delete() {
                     chunks_to_delete.push(chunk.clone());
                 }
             }
+            result.deleted_chunks += chunks_to_delete.len();
+
             for chunk in &chunks_to_delete {
                 region.remove_chunk(chunk);
             }
@@ -36,11 +37,6 @@ pub fn optimize_region_file(
                     std::fs::remove_file(region_file_path)?;
                 }
                 return Ok(result);
-            }
-
-            let deleted_chunk_count = chunks_to_delete.len();
-            if deleted_chunk_count > 0 {
-                result.deleted_chunks += deleted_chunk_count;
             }
 
             if write {
