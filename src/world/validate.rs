@@ -1,7 +1,14 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use thiserror::Error;
 
-pub fn validate_world(world_dir: &Path) -> Result<(), ValidateWorldError> {
+pub fn validate_worlds(worlds: &Vec<PathBuf>) -> Result<(), ValidateWorldError> {
+    for world in worlds {
+        validate_world(&world)?;
+    }
+    Ok(())
+}
+
+fn validate_world(world_dir: &Path) -> Result<(), ValidateWorldError> {
     if !world_dir.is_dir() {
         return Err(ValidateWorldError::NotADirectory);
     }

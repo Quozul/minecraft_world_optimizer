@@ -72,7 +72,7 @@ cargo install --git https://github.com/Quozul/minecraft_world_optimizer.git
 ## Usage
 
 ```shell
-minecraft_world_optimizer <WORLD_PATH>
+minecraft_world_optimizer [WORLD_PATH]...
 ```
 
 Replace <WORLD_PATH> with the path to your Minecraft world folder containing region files.
@@ -83,6 +83,14 @@ Example:
 
 ```shell
 minecraft_world_optimizer ~/.minecraft/saves/MyWorld
+```
+
+It can also be used to optimize a server's worlds as dimensions are split in multiple worlds:
+
+```shell
+minecraft_world_optimizer /path/to/server/world*
+# Or if your shell does not support wildcard:
+minecraft_world_optimizer /path/to/server/world /path/to/server/world_nether /path/to/server/world_the_end
 ```
 
 ## Contributing

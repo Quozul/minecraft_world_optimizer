@@ -10,5 +10,5 @@ use std::path::PathBuf;
 )]
 pub struct Cli {
     /// Path to your Minecraft World containing `level.dat` file.
-    pub world_path: PathBuf,
+    pub world_path: Vec<PathBuf>,
 }
