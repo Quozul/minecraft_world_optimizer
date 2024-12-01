@@ -1,5 +1,8 @@
 # Minecraft World Optimizer
 
+> [!WARNING]
+> This software is highly experimental. Use at your own risks and report any bugs by submitting an issue on GitHub.
+
 **Minecraft World Optimizer** is a command-line tool designed to reduce the size of your Minecraft world by parsing and
 optimizing region files. It's particularly useful for large worlds that have many generated but unexplored chunks.
 
@@ -73,11 +76,13 @@ minecraft_world_optimizer <WORLD_PATH>
 ```
 
 Replace <WORLD_PATH> with the path to your Minecraft world folder containing region files.
+It will detect the 3 vanilla dimensions and optimise them. Note that this has not been tested on modded worlds with
+multiple dimensions.
 
 Example:
 
 ```shell
-minecraft_world_optimizer ~/.minecraft/saves/MyWorld/region
+minecraft_world_optimizer ~/.minecraft/saves/MyWorld
 ```
 
 ## Contributing

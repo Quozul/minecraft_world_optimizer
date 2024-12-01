@@ -9,6 +9,6 @@ use std::path::PathBuf;
     long_about = None,
 )]
 pub struct Cli {
-    /// Path to the "region" directory of you Minecraft World
-    pub path: PathBuf,
+    /// Path to your Minecraft World containing `level.dat` file.
+    pub world_path: PathBuf,
 }

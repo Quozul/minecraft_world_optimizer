@@ -2,13 +2,13 @@ use crate::region_loader::region::Region;
 use indicatif::ProgressBar;
 use std::path::PathBuf;
 
-pub fn optimize_region_file(region_file_path: PathBuf, pb: &ProgressBar) -> std::io::Result<()> {
+pub fn optimize_region_file(region_file_path: &PathBuf, pb: &ProgressBar) -> std::io::Result<()> {
     let region_file_name = region_file_path
         .file_stem()
         .map(|os_str_val| os_str_val.to_string_lossy().into_owned())
         .unwrap_or("Unk".to_string());
 
-    match Region::from_file_name(&region_file_path) {
+    match Region::from_file_name(region_file_path) {
         Ok(mut region) => {
             // Read the first chunk
             let mut chunks_to_delete = Vec::new();
