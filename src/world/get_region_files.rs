@@ -1,6 +1,16 @@
+use crate::world::validate::validate_worlds;
+use std::error::Error;
 use std::path::{Path, PathBuf};
 
-pub fn get_region_files(world_dir: &Path) -> Vec<PathBuf> {
+pub fn get_region_files(world_paths: &Vec<PathBuf>) -> Result<Vec<PathBuf>, Box<dyn Error>> {
+    let worlds = validate_worlds(world_paths)?;
+    Ok(worlds
+        .iter()
+        .flat_map(|world| get_region_files_from_world(world))
+        .collect::<Vec<_>>())
+}
+
+fn get_region_files_from_world(world_dir: &Path) -> Vec<PathBuf> {
     let mut overworld_regions = get_region_dir(world_dir.to_path_buf());
     let nether_regions = get_region_dir(world_dir.join("DIM-1"));
     let the_end_regions = get_region_dir(world_dir.join("DIM1"));

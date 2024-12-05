@@ -36,13 +36,13 @@ The Minecraft World Optimizer has only been successfully tested on 1.20.6 and 1.
 
 The Minecraft World Optimizer as successfully been tested on the following worlds:
 
-- **Server World:** Backed-up world of my survival server with over 13.9 million generated chunks.
+- **Server Worlds:** Backed-up world of my survival server with over 17.9 million generated chunks.
 - **New World:** New amplified world pre-generated using Chunky with a square radius of 1024.
 
-| World        | Before Optimization                      | After Optimization                     | Size Reduction |
-|--------------|------------------------------------------|----------------------------------------|----------------|
-| Server World | 105,681,020 Kilobytes <br/> 24,381 Files | 16,145,728 Kilobytes <br/> 6,961 Files | **84.7%**      |
-| New World    | 235,204 Kilobytes <br/> 36 Files         | 2,440 Kilobytes <br/> 4 Files          | **98.9%**      |
+| World         | Before Optimization                      | After Optimization                     | Size Reduction |
+|---------------|------------------------------------------|----------------------------------------|----------------|
+| Server Worlds | 134,079,252 Kilobytes <br/> 29,861 Files | 27,220,248 Kilobytes <br/> 9,734 Files | **79.7%**      |
+| New World     | 235,204 Kilobytes <br/> 36 Files         | 2,440 Kilobytes <br/> 4 Files          | **98.9%**      |
 
 ## Getting Started
 
@@ -72,25 +72,33 @@ cargo install --git https://github.com/Quozul/minecraft_world_optimizer.git
 ## Usage
 
 ```shell
-minecraft_world_optimizer [WORLD_PATH]...
+# View up-to-date usage of the command:
+❯ minecraft_world_optimizer --help
+❯ minecraft_world_optimizer <MODE> <WORLD_PATHS>...
 ```
 
-Replace <WORLD_PATH> with the path to your Minecraft world folder containing region files.
+Replace mode with one of the following:
+
+- `check`: the program will only check for chunks and region files that can be deleted without actually deleting any
+  data. This mode is around two times faster than the write mode as it does not perform any file system operations.
+- `write`: the program will delete unused chunks and region files.
+
+Replace <WORLD_PATHS> with the path to your Minecraft world folder containing region files.
 It will detect the 3 vanilla dimensions and optimise them. Note that this has not been tested on modded worlds with
 multiple dimensions.
 
 Example:
 
 ```shell
-minecraft_world_optimizer ~/.minecraft/saves/MyWorld
+❯ minecraft_world_optimizer check ~/.minecraft/saves/MyWorld
 ```
 
-It can also be used to optimize a server's worlds as dimensions are split in multiple worlds:
+It can also be used to optimize server worlds as dimensions are split in multiple worlds:
 
 ```shell
-minecraft_world_optimizer /path/to/server/world*
+❯ minecraft_world_optimizer check /path/to/server/world*
 # Or if your shell does not support wildcard:
-minecraft_world_optimizer /path/to/server/world /path/to/server/world_nether /path/to/server/world_the_end
+❯ minecraft_world_optimizer check /path/to/server/world /path/to/server/world_nether /path/to/server/world_the_end
 ```
 
 ## Contributing

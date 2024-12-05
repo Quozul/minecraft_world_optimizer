@@ -1,11 +1,11 @@
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
-pub fn validate_worlds(worlds: &Vec<PathBuf>) -> Result<(), ValidateWorldError> {
-    for world in worlds {
+pub fn validate_worlds(world_paths: &Vec<PathBuf>) -> Result<&Vec<PathBuf>, ValidateWorldError> {
+    for world in world_paths {
         validate_world(world)?;
     }
-    Ok(())
+    Ok(world_paths)
 }
 
 fn validate_world(world_dir: &Path) -> Result<(), ValidateWorldError> {
