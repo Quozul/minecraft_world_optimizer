@@ -18,7 +18,7 @@ impl Region {
     }
 
     fn from_bytes(bytes: &[u8]) -> Result<Self, &'static str> {
-        let mut chunks = Vec::new();
+        let mut chunks = Vec::with_capacity(1024);
         if bytes.len() < 8192 {
             return Err("Cannot read header of region file");
         }
@@ -91,7 +91,7 @@ impl Region {
         &self.chunks
     }
 
-    pub fn get_chunk_count(&mut self) -> usize {
+    pub fn get_chunk_count(&self) -> usize {
         self.chunks.len()
     }
 

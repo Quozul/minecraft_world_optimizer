@@ -15,8 +15,8 @@ macro_rules! impl_read_number {
 macro_rules! impl_read_array {
     ($fn_name:ident, $type:ty, $reader:ident) => {
         pub fn $fn_name(&mut self) -> Vec<$type> {
-            let size = self.read_i32();
-            let mut values = Vec::new();
+            let size = self.read_i32() as usize;
+            let mut values = Vec::with_capacity(size);
 
             for _ in 0..size {
                 let next_tag = self.$reader();
@@ -42,7 +42,7 @@ impl<'a> BinaryReader<'a> {
         let size = self.read_u16() as usize;
         let bytes = &self.raw[self.index..self.index + size];
         self.index += size;
-        String::from_utf8(Vec::from(bytes))
+        String::from_utf8(bytes.to_vec())
     }
 
     pub fn read_name(&mut self) -> Option<String> {
