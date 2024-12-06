@@ -1,5 +1,5 @@
 [package]
-name = "minecraft_world_optimizer"
+name = "minecraft_world_trimmer"
 version = "0.1.1"
 edition = "2021"
 
