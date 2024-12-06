@@ -10,6 +10,7 @@ use thiserror::Error;
 #[derive(PartialEq, Debug)]
 pub struct Region {
     chunks: Vec<Chunk>,
+    is_modified: bool,
 }
 
 #[derive(Error, Debug)]
@@ -49,7 +50,10 @@ impl Region {
             }
         }
 
-        Ok(Self { chunks })
+        Ok(Self {
+            chunks,
+            is_modified: false,
+        })
     }
 
     pub fn to_bytes(&self, compression: Compression) -> Vec<u8> {
@@ -106,10 +110,17 @@ impl Region {
 
     pub fn remove_chunk_by_index(&mut self, index: usize) {
         self.chunks.remove(index);
+        if !self.is_modified {
+            self.is_modified = true;
+        }
     }
 
     pub fn is_empty(&self) -> bool {
         self.chunks.is_empty()
+    }
+
+    pub fn is_modified(&self) -> bool {
+        self.is_modified
     }
 }
 
