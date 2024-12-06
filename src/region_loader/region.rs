@@ -91,10 +91,12 @@ impl Region {
         &self.chunks
     }
 
-    pub fn remove_chunk(&mut self, chunk: &Chunk) {
-        if let Some(index) = self.chunks.iter().position(|other| other == chunk) {
-            self.chunks.remove(index);
-        }
+    pub fn get_chunk_count(&mut self) -> usize {
+        self.chunks.len()
+    }
+
+    pub fn remove_chunk_by_index(&mut self, index: usize) {
+        self.chunks.remove(index);
     }
 
     pub fn is_empty(&self) -> bool {

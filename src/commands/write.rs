@@ -37,19 +37,18 @@ fn optimize_write(region_file_path: &PathBuf) -> std::io::Result<OptimizeResult>
 
     match Region::from_file_name(region_file_path) {
         Ok(mut region) => {
-            let chunks = region.get_chunks();
-            result.total_chunks += chunks.len();
+            result.total_chunks += region.get_chunk_count();
 
-            let mut chunks_to_delete = Vec::new();
-            for chunk in chunks {
-                if chunk.should_delete() {
-                    chunks_to_delete.push(chunk.clone());
-                }
-            }
-            result.deleted_chunks += chunks_to_delete.len();
+            let chunks_to_delete_indices: Vec<_> = region
+                .get_chunks()
+                .iter()
+                .enumerate()
+                .filter_map(|(i, chunk)| if chunk.should_delete() { Some(i) } else { None })
+                .collect();
+            result.deleted_chunks += chunks_to_delete_indices.len();
 
-            for chunk in &chunks_to_delete {
-                region.remove_chunk(chunk);
+            for &index in chunks_to_delete_indices.iter().rev() {
+                region.remove_chunk_by_index(index);
             }
 
             if region.is_empty() {
