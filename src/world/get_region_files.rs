@@ -27,6 +27,12 @@ fn get_region_dir(dimension_directory: PathBuf) -> Vec<PathBuf> {
 
 fn get_mca_files(region_directory: PathBuf) -> Vec<PathBuf> {
     std::fs::read_dir(region_directory)
-        .map(|dir| dir.flatten().map(|entry| entry.path()).collect::<Vec<_>>())
+        .map(|dir| {
+            dir.flatten()
+                .map(|entry| entry.path())
+                // mcc files are not supported yet
+                .filter(|path| path.extension().and_then(|ext| ext.to_str()) == Some("mca"))
+                .collect::<Vec<_>>()
+        })
         .unwrap_or_default()
 }
