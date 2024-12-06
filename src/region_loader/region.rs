@@ -43,14 +43,14 @@ impl Region {
         Ok(Self { chunks })
     }
 
-    pub fn to_bytes(&self) -> Vec<u8> {
+    pub fn to_bytes(&self, compression: Compression) -> Vec<u8> {
         let mut data = Vec::new();
         let mut location_table = [0_u8; 4096];
         let mut timestamp_table = [0_u8; 4096];
 
         for chunk in &self.chunks {
             // Serialize the chunk to bytes
-            let mut serialized = chunk.to_bytes(Compression::best());
+            let mut serialized = chunk.to_bytes(compression);
             align_vec_size(&mut serialized);
 
             // Build the new location
@@ -144,7 +144,7 @@ mod tests {
 
         // Parse the region file
         let original_parsed_region_file = Region::from_bytes(original_bytes).unwrap();
-        let serialized_bytes = original_parsed_region_file.to_bytes();
+        let serialized_bytes = original_parsed_region_file.to_bytes(Compression::fast());
 
         // Wa cannot validate the header as the compression and chunk order in the payload may differ
         // resulting in a modification of the offset bytes, so as long as the re-parsed region file is

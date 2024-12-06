@@ -1,13 +1,17 @@
 use crate::commands::optimize_result::{reduce_optimize_results, OptimizeResult};
 use crate::region_loader::region::Region;
 use crate::world::get_region_files::get_region_files;
+use flate2::Compression;
 use indicatif::{ProgressBar, ProgressStyle};
 use rayon::iter::ParallelIterator;
 use rayon::prelude::IntoParallelRefIterator;
 use std::error::Error;
 use std::path::PathBuf;
 
-pub fn execute_write(world_paths: &Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
+pub fn execute_write(
+    world_paths: &Vec<PathBuf>,
+    compression: Compression,
+) -> Result<(), Box<dyn Error>> {
     let entries = get_region_files(world_paths)?;
     let pb = ProgressBar::new(entries.len() as u64);
     let style = ProgressStyle::with_template(
@@ -19,7 +23,7 @@ pub fn execute_write(world_paths: &Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
     let mut results = entries
         .par_iter()
         .flat_map(|entry| {
-            let result = optimize_write(entry);
+            let result = optimize_write(entry, compression);
             pb.inc(1);
             result
         })
@@ -31,7 +35,10 @@ pub fn execute_write(world_paths: &Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn optimize_write(region_file_path: &PathBuf) -> std::io::Result<OptimizeResult> {
+fn optimize_write(
+    region_file_path: &PathBuf,
+    compression: Compression,
+) -> std::io::Result<OptimizeResult> {
     let mut result = OptimizeResult::default();
 
     match Region::from_file_name(region_file_path) {
@@ -54,7 +61,7 @@ fn optimize_write(region_file_path: &PathBuf) -> std::io::Result<OptimizeResult>
                 result.deleted_regions += 1;
                 std::fs::remove_file(region_file_path)?;
             } else {
-                let bytes = region.to_bytes();
+                let bytes = region.to_bytes(compression);
                 std::fs::write(region_file_path, bytes)?;
             }
         }
