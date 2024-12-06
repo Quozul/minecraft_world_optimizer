@@ -5,22 +5,31 @@ use flate2::Compression;
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
+use thiserror::Error;
 
 #[derive(PartialEq, Debug)]
 pub struct Region {
     chunks: Vec<Chunk>,
 }
 
+#[derive(Error, Debug)]
+pub enum ParseRegionError {
+    #[error("error while reading the file")]
+    ReadError,
+    #[error("cannot read header of region file")]
+    HeaderError,
+}
+
 impl Region {
-    pub fn from_file_name(file_name: &PathBuf) -> Result<Self, &'static str> {
-        let bytes = try_read_bytes(file_name).map_err(|_| "Error while reading the file")?;
+    pub fn from_file_name(file_name: &PathBuf) -> Result<Self, ParseRegionError> {
+        let bytes = try_read_bytes(file_name).map_err(|_| ParseRegionError::ReadError)?;
         Region::from_bytes(&bytes)
     }
 
-    fn from_bytes(bytes: &[u8]) -> Result<Self, &'static str> {
+    fn from_bytes(bytes: &[u8]) -> Result<Self, ParseRegionError> {
         let mut chunks = Vec::with_capacity(1024);
         if bytes.len() < 8192 {
-            return Err("Cannot read header of region file");
+            return Err(ParseRegionError::HeaderError);
         }
 
         let location_table = &bytes[0..4096];
